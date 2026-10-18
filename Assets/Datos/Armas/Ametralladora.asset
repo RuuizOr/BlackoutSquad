@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d3cd08fc6c1e324799944bc37a35487, type: 3}
+  m_Name: Ametralladora
+  m_EditorClassIdentifier: Assembly-CSharp::ArmaDatos
+  nombre: AMETRALLADORA
+  icono: {fileID: 21300000, guid: e19ee8747c8eb5342a768c88ad4ffddc, type: 3}
+  sonidoDisparo: {fileID: 8300000, guid: 444572166d3f14b4780520d26686746b, type: 3}
+  volumenSonido: 0.55
+  intervaloSonido: 0
+  prefabBala: {fileID: 1631463315428266376, guid: 79b8d9a57693fee4db223bb2a9ef4d5b, type: 3}
+  cadencia: 0.08
+  "da\xF1o": 1
+  velocidadBala: 20
+  vidaBala: 1
+  proyectilesPorDisparo: 1
+  dispersionGrados: 3
+  expulsaCasquillo: 1
+  muestraFogonazo: 1
+  municion: 150

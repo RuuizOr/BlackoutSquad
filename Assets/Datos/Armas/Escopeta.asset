@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d3cd08fc6c1e324799944bc37a35487, type: 3}
+  m_Name: Escopeta
+  m_EditorClassIdentifier: Assembly-CSharp::ArmaDatos
+  nombre: ESCOPETA
+  icono: {fileID: 21300000, guid: ecbaea6536c4ab6458fa9278ca82ef6b, type: 3}
+  sonidoDisparo: {fileID: 8300000, guid: 417324d8f3a279f428d501e75429f1ba, type: 3}
+  volumenSonido: 0.9
+  intervaloSonido: 0
+  prefabBala: {fileID: 5164078099421130525, guid: 9388143ede9e1a04e947a118d7f2c42f, type: 3}
+  cadencia: 0.6
+  "da\xF1o": 1
+  velocidadBala: 16
+  vidaBala: 0.24
+  proyectilesPorDisparo: 6
+  dispersionGrados: 14
+  expulsaCasquillo: 1
+  muestraFogonazo: 1
+  municion: 30
