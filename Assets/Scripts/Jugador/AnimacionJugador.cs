@@ -15,6 +15,13 @@ public class AnimacionJugador : MonoBehaviour
         disparo = GetComponent<JugadorDisparo>();
     }
 
+    void Start()
+    {
+        // El prefab trae la skin de Alfa (el primer personaje): se cambia por la del comando elegido
+        GameManager gm = GameManager.Instancia;
+        if (gm != null && gm.PersonajeActual != null) animador.CambiarSkin(gm.Personajes[0].frames, gm.PersonajeActual.frames);
+    }
+
     void LateUpdate()
     {
         animador.Reproducir(ElegirClip());

@@ -13,17 +13,21 @@ Run & Gun 2D de desplazamiento lateral (Unity 6, URP 2D, nuevo Input System, PC 
 
 ## 2. Controles
 
-| Acción | Teclado y mouse | Gamepad |
-|---|---|---|
-| Moverse | A / D (o flechas ← →) | Stick izquierdo / D-pad |
-| Saltar (mantener = más alto) | W | A |
-| Agacharse | S (o flecha ↓) | Stick abajo |
-| Disparar | Espacio | Gatillo derecho |
-| Apuntar arriba / diagonal | Flecha ↑ (+ A/D) | Stick arriba (+ lado) |
-| Apuntar abajo (en el aire) | S (+ A/D) | Stick abajo |
-| Granada | E | B |
-| Rodar (esquivar) | Shift | X |
-| Pausa | ESC | Start |
+| Acción | Teclado y mouse | Xbox (One, Series S/X) | PlayStation (4 y 5) |
+|---|---|---|---|
+| Moverse | A / D (o flechas ← →) | Stick izquierdo / cruceta | Stick izquierdo / cruceta |
+| Saltar (mantener = más alto) | W | A | Cruz |
+| Agacharse | S (o flecha ↓) | Stick abajo | Stick abajo |
+| Disparar | Espacio | RT | R2 |
+| Apuntar arriba / diagonal | Flecha ↑ (+ A/D) | Stick arriba (+ lado) | Stick arriba (+ lado) |
+| Apuntar abajo (en el aire) | S (+ A/D) | Stick abajo | Stick abajo |
+| Granada | E | B | Círculo |
+| Rodar (esquivar) | Shift | X | Cuadrado |
+| Pausa | ESC | Menu | Options |
+| Menús: elegir / regresar | Mouse o Enter / ESC | A / B | Cruz / Círculo |
+
+El mando se puede conectar o quitar en cualquier momento (USB o Bluetooth), y las ayudas en pantalla cambian al
+control que se esté usando. Si se desconecta el único mando durante un nivel, el juego se pausa.
 
 Consejos: agáchate para esquivar las balas rectas de los soldados; rueda para atravesar disparos (0.2 s invulnerable);
 al soldado con escudo dale por detrás o con granada; al tanque, por detrás o desde arriba.
@@ -53,6 +57,7 @@ CREDITOS.md            Todos los recursos con autor, enlace y licencia
 
 **Core**
 - `ControlesJuego` — único lugar donde se leen teclado, mouse y gamepad (Input System). Los demás scripts usan sus propiedades.
+- `GestorMando` — conexión y desconexión de mandos, cursor y selección de los menús. Lo crea `Arranque`.
 - `GameManager` — vidas, puntos, nivel actual, arma conservada, cambio de escena y "hit stop". Persiste entre escenas.
 - `Arranque` — crea `Resources/SistemasJuego` antes de cargar cualquier escena.
 - `Transicion` — fundido a negro entre escenas.
@@ -74,7 +79,7 @@ para raso, escudo y élite), `TorretaEnemiga`, `SaludEnemigo` (vida, escudo fron
 **Niveles**: `ControladorNivel` (briefing, tarjeta de título, muerte/reaparición, checkpoints, jefe, bonos, fin),
 `GenerarColisionTilemap`, `Checkpoint`, `ZonaMuerte`, `AlambrePuas`, `PlataformaDestructible`, `Cofre`, `ArenaJefe`, `ParallaxCapa`.
 
-**UI**: `HUD`, `MenuPausa`, `PantallaFinal`, `PanelOpciones`, `MenuPrincipal`, `Splash`, `BotonAnimado`,
+**UI**: `HUD`, `MenuPausa`, `PantallaFinal`, `PanelOpciones`, `MenuPrincipal`, `SeleccionPersonaje`, `Splash`, `BotonAnimado`,
 `FondoAnimadoUI`, `AnimadorImagenUI`.
 
 **Audio**: `AudioManager` (música con fundido cruzado, jingles, efectos con variación de tono, volúmenes en PlayerPrefs).
@@ -90,6 +95,17 @@ para raso, escudo y élite), `TorretaEnemiga`, `SaludEnemigo` (vida, escudo fron
   (el soldado mide ~1.75 unidades) y los tiles 32 px por unidad.
 - Si cambias los PNG de `Assets/Art/Generado` conservando el nombre y el tamaño de celda, basta con volver a correr
   **Construir juego**.
+
+### Comandos jugables
+
+Al presionar **JUGAR** aparece **ELIGE TU COMANDO**: Alfa o Bravo. Los dos juegan igual; solo cambia la skin.
+
+- Bravo sale del pack Open Gunner (ver `CREDITOS.md`). `Herramientas/preparar_escuadron.py` elige sus cuadros, genera su hoja
+  y dibuja su cara para el HUD; después de ejecutarlo hay que volver a correr **Construir juego**.
+- El script imprime la punta del arma de cada pose: esos valores van en la lista `Escuadron` de `ConstructorPrefabs.cs`.
+- Nombre y descripción: `Assets/Datos/Personajes/*.asset` se regeneran desde la lista `Escuadron` de `ConstructorPrefabs.cs`.
+- Para agregar un comando: genera su hoja, agrégala a `Escuadron` y a las reglas de `ConstructorImportacion.cs`, y corre
+  **Construir juego**. La hoja debe tener los mismos 16 cuadros en el mismo orden que Alfa.
 
 ## 6. Reemplazar audio
 

@@ -1,25 +1,34 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-// Menú principal: JUGAR, OPCIONES y SALIR.
+// Menú principal: JUGAR (lleva a elegir comando), OPCIONES y SALIR.
 public class MenuPrincipal : MonoBehaviour
 {
     [SerializeField] GameObject panelPrincipal;
     [SerializeField] GameObject panelOpciones;
+    [SerializeField] SeleccionPersonaje seleccion;
 
     [SerializeField] Button botonJugar;
     [SerializeField] Button botonOpciones;
     [SerializeField] Button botonSalir;
     [SerializeField] Button botonVolverOpciones;
 
+    TMP_Text textoControles;
+    TipoControl tipoMostrado;
+
     void Awake()
     {
         Time.timeScale = 1f;
+        Transform t = panelPrincipal.transform.Find("Controles");
+        if (t != null) textoControles = t.GetComponent<TMP_Text>();
+        MostrarControles();
         botonJugar.onClick.AddListener(Jugar);
         botonOpciones.onClick.AddListener(() => Mostrar(panelOpciones, botonVolverOpciones));
         botonSalir.onClick.AddListener(Salir);
         botonVolverOpciones.onClick.AddListener(() => Mostrar(panelPrincipal, botonOpciones));
+        if (seleccion != null) seleccion.BotonVolver.onClick.AddListener(() => Mostrar(panelPrincipal, botonJugar));
     }
 
     void Start()
@@ -31,21 +40,31 @@ public class MenuPrincipal : MonoBehaviour
 
     void Update()
     {
-        // ESC regresa al panel principal
-        if (ControlesJuego.PausaPresionada && !panelPrincipal.activeSelf)
+        // ESC, Start o B / Círculo regresan al panel principal
+        if ((ControlesJuego.PausaPresionada || ControlesJuego.CancelarPresionado) && !panelPrincipal.activeSelf)
             Mostrar(panelPrincipal, botonJugar);
+
+        if (tipoMostrado != ControlesJuego.TipoActual) MostrarControles();
+    }
+
+    void MostrarControles()
+    {
+        tipoMostrado = ControlesJuego.TipoActual;
+        if (textoControles != null) textoControles.text = ControlesJuego.TextoAyudaControles;
     }
 
     void Mostrar(GameObject panel, Button seleccionado)
     {
         panelPrincipal.SetActive(panel == panelPrincipal);
         panelOpciones.SetActive(panel == panelOpciones);
+        if (seleccion != null) seleccion.gameObject.SetActive(panel == seleccion.gameObject);
         if (EventSystem.current != null) EventSystem.current.SetSelectedGameObject(seleccionado.gameObject);
     }
 
     void Jugar()
     {
-        if (GameManager.Instancia != null) GameManager.Instancia.NuevaPartida();
+        if (seleccion != null) Mostrar(seleccion.gameObject, seleccion.TarjetaInicial);
+        else if (GameManager.Instancia != null) GameManager.Instancia.NuevaPartida();
     }
 
     void Salir()

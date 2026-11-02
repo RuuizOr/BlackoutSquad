@@ -51,6 +51,20 @@ public class AnimadorSprites : MonoBehaviour
         render.sprite = clip.frames[0];
     }
 
+    // Cambia la skin en juego: cada cuadro de "original" se reemplaza por el del mismo índice en "nueva"
+    public void CambiarSkin(Sprite[] original, Sprite[] nueva)
+    {
+        foreach (ClipSprites clip in clips)
+        {
+            for (int i = 0; i < clip.frames.Length; i++)
+            {
+                int n = Array.IndexOf(original, clip.frames[i]);
+                if (n >= 0 && n < nueva.Length) clip.frames[i] = nueva[n];
+            }
+        }
+        if (clipActual != null) Reproducir(clipActual.nombre, true);
+    }
+
     public bool TieneClip(string nombre)
     {
         return clips.Exists(c => c.nombre == nombre);

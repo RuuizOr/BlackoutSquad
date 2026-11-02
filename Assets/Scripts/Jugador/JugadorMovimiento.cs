@@ -136,7 +136,6 @@ public class JugadorMovimiento : MonoBehaviour
             {
                 tiempoPaso = 0.32f;
                 AudioManager.Sonar(Sfx.Paso, 0.35f);
-                Efectos.Polvo(transform.position);
             }
         }
     }

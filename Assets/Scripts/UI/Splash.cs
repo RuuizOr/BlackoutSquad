@@ -1,11 +1,10 @@
 using System.Collections;
 using UnityEngine;
 
-// Pantalla de inicio: título "Blackout Squad" y nombres del equipo con fade in/out.
+// Pantalla de inicio: título "Blackout Squad" con fade in/out.
 public class Splash : MonoBehaviour
 {
     [SerializeField] CanvasGroup grupoTitulo;
-    [SerializeField] CanvasGroup grupoEquipo;
     [SerializeField] string escenaSiguiente = "MainMenu";
     [SerializeField] float duracionFundido = 0.8f;
     [SerializeField] float tiempoVisible = 1.6f;
@@ -15,7 +14,6 @@ public class Splash : MonoBehaviour
     void Start()
     {
         grupoTitulo.alpha = 0f;
-        grupoEquipo.alpha = 0f;
         StartCoroutine(Secuencia());
     }
 
@@ -35,9 +33,6 @@ public class Splash : MonoBehaviour
         yield return Fundir(grupoTitulo, 0f, 1f);
         yield return new WaitForSeconds(tiempoVisible);
         yield return Fundir(grupoTitulo, 1f, 0f);
-        yield return Fundir(grupoEquipo, 0f, 1f);
-        yield return new WaitForSeconds(tiempoVisible);
-        yield return Fundir(grupoEquipo, 1f, 0f);
         saltado = true;
         Transicion.Cargar(escenaSiguiente);
     }

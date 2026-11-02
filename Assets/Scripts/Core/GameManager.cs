@@ -12,6 +12,9 @@ public class GameManager : MonoBehaviour
     [SerializeField] int granadasPorVida = 5;
     [SerializeField] int totalNiveles = 3;
 
+    [Header("Comandos jugables (el primero es la skin del prefab)")]
+    [SerializeField] PersonajeDatos[] personajes;
+
     [Header("Escenas")]
     [SerializeField] string escenaMenu = "MainMenu";
     [SerializeField] string prefijoNivel = "Nivel";
@@ -21,6 +24,10 @@ public class GameManager : MonoBehaviour
     public int NivelActual { get; set; } = 1;
     public int GranadasPorVida => granadasPorVida;
     public int VidasIniciales => vidasIniciales;
+
+    public PersonajeDatos[] Personajes => personajes;
+    public int IndicePersonaje { get; private set; }
+    public PersonajeDatos PersonajeActual => personajes != null && IndicePersonaje < personajes.Length ? personajes[IndicePersonaje] : null;
 
     // Arma que se conserva entre niveles durante la partida
     public ArmaDatos ArmaGuardada { get; set; }
@@ -40,6 +47,11 @@ public class GameManager : MonoBehaviour
     }
 
     // ---------- Flujo de partida ----------
+    public void ElegirPersonaje(int indice)
+    {
+        IndicePersonaje = indice;
+    }
+
     public void NuevaPartida()
     {
         Vidas = vidasIniciales;

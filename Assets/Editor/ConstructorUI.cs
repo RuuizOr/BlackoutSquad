@@ -282,6 +282,7 @@ public static partial class ConstructorJuego
         Colocar(pie.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 40f), new Vector2(1100f, 40f));
 
         HUD hud = canvas.AddComponent<HUD>();
+        Asignar(hud, "retrato", retrato);
         Asignar(hud, "barraVida", barraVida);
         Asignar(hud, "textoVidas", vidas);
         Asignar(hud, "iconoArma", iconoArma);
@@ -359,22 +360,11 @@ public static partial class ConstructorJuego
         TextMeshProUGUI sub = Texto(grupoTitulo, "Subtitulo", "UN RUN & GUN DEL EQUIPO BLACKOUT", 30f, Crema, false);
         Colocar(sub.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -100f), new Vector2(1600f, 60f));
 
-        RectTransform grupoEquipo = Estirar(UI("GrupoEquipo", canvas.transform));
-        CanvasGroup cgE = grupoEquipo.gameObject.AddComponent<CanvasGroup>();
-        TextMeshProUGUI presenta = Texto(grupoEquipo, "Presenta", "UN PROYECTO INTEGRADOR DE", 30f, Oliva * 1.6f, false);
-        Colocar(presenta.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, 250f), new Vector2(1600f, 60f));
-        TextMeshProUGUI nombres = Texto(grupoEquipo, "Equipo", NombresEquipo, 54f, Crema, true);
-        Colocar(nombres.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -30f), new Vector2(1600f, 460f));
-
         Splash sp = canvas.AddComponent<Splash>();
         Asignar(sp, "grupoTitulo", cgT);
-        Asignar(sp, "grupoEquipo", cgE);
         CrearEventSystem();
         EditorSceneManager.SaveScene(escena, RutaEscenas + "/Splash.unity");
     }
-
-    const string NombresEquipo =
-        "Márquez Bailón Elías Manuel\nOcampo Martínez Ángel Daniel\nMedina Villa Abril Aidee\nRuiz Santos Orlando\nVentura Gil Astrid Valeria";
 
     // =====================================================================
     // Menú principal
@@ -412,16 +402,28 @@ public static partial class ConstructorJuego
         Image sombra = Imagen(c, "Sombra", spBlanco, new Color(0.02f, 0.03f, 0.02f, 0.45f));
         Estirar(sombra.rectTransform);
         Image piso = Imagen(c, "Piso", spBlanco, new Color(0.08f, 0.06f, 0.1f));
-        Colocar(piso.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), Vector2.zero, new Vector2(1920f, 90f));
+        Colocar(piso.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), Vector2.zero, new Vector2(1920f, AltoPisoMenu));
+        Image bordePiso = Imagen(c, "BordePiso", spBlanco, Naranja);
+        Colocar(bordePiso.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, AltoPisoMenu), new Vector2(1920f, 6f));
 
-        // Soldado corriendo
-        Sprite[] heroe = Frames(G("Personajes/comando_alfa.png"));
-        Image soldado = Imagen(c, "SoldadoCorriendo", heroe[2], Color.white);
-        soldado.preserveAspect = true;
-        Colocar(soldado.rectTransform, new Vector2(0f, 0f), new Vector2(0.5f, 0f), new Vector2(330f, 90f), new Vector2(384f, 480f));
-        AnimadorImagenUI ai = soldado.gameObject.AddComponent<AnimadorImagenUI>();
-        Asignar(ai, "frames", Elegir(heroe, 6, 7, 8, 9));
-        Asignar(ai, "fps", 10f);
+        // Los dos comandos corriendo sobre el suelo, cada uno con su nombre debajo
+        const float escalaSoldado = 4f, xFrente = 730f, separacion = 430f;
+        for (int i = Escuadron.Length - 1; i >= 0; i--)
+        {
+            float xSoldado = xFrente - separacion * i;
+            Sprite[] cuadros = Frames(G("Personajes/" + Escuadron[i].hoja + ".png"));
+            Image soldado = Imagen(c, "Soldado_" + Escuadron[i].hoja, cuadros[2], Color.white);
+            soldado.preserveAspect = true;
+            Vector2 tamañoCelda = cuadros[2].rect.size * escalaSoldado;
+            Colocar(soldado.rectTransform, new Vector2(0f, 0f), new Vector2(0.5f, 0f), new Vector2(xSoldado, AltoPisoMenu), tamañoCelda);
+            AnimadorImagenUI ai = soldado.gameObject.AddComponent<AnimadorImagenUI>();
+            Asignar(ai, "frames", Elegir(cuadros, 2, 3, 4, 5));
+            Asignar(ai, "fps", 10f);
+            Asignar(ai, "desfase", i * 0.13f);
+
+            TextMeshProUGUI nombre = Texto(c, "Nombre_" + Escuadron[i].hoja, Escuadron[i].nombre, 34f, Naranja, true);
+            Colocar(nombre.rectTransform, new Vector2(0f, 0f), new Vector2(0.5f, 0f), new Vector2(xSoldado, 62f), new Vector2(420f, 50f));
+        }
 
         // Título
         TextMeshProUGUI titulo = Texto(c, "Titulo", "BLACKOUT SQUAD", 160f, Naranja, true);
@@ -431,22 +433,27 @@ public static partial class ConstructorJuego
 
         // Panel principal
         RectTransform panelPrincipal = Estirar(UI("PanelPrincipal", c));
-        float x = 260f;
-        Button jugar = Boton(panelPrincipal, "BotonJugar", "JUGAR", new Vector2(x, 20f), new Vector2(520f, 90f), 48f);
-        Button opciones = Boton(panelPrincipal, "BotonOpciones", "OPCIONES", new Vector2(x, -90f), new Vector2(520f, 90f), 48f);
-        Button salir = Boton(panelPrincipal, "BotonSalir", "SALIR", new Vector2(x, -200f), new Vector2(520f, 90f), 48f);
+        float x = 500f;
+        Image marcoBotones = Imagen(panelPrincipal, "MarcoBotones", spPanel, new Color(1f, 1f, 1f, 0.92f), true);
+        Colocar(marcoBotones.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(x, -70f), new Vector2(620f, 430f));
+        Button jugar = Boton(panelPrincipal, "BotonJugar", "JUGAR", new Vector2(x, 40f), new Vector2(520f, 90f), 48f);
+        Button opciones = Boton(panelPrincipal, "BotonOpciones", "OPCIONES", new Vector2(x, -70f), new Vector2(520f, 90f), 48f);
+        Button salir = Boton(panelPrincipal, "BotonSalir", "SALIR", new Vector2(x, -180f), new Vector2(520f, 90f), 48f);
         TextMeshProUGUI ayuda = Texto(panelPrincipal, "Controles",
             "A/D MOVER · W SALTAR · ESPACIO DISPARAR · ↑ APUNTAR ARRIBA · S AGACHARSE · E GRANADA · SHIFT RODAR · ESC PAUSA",
             16f, Crema, false);
-        Colocar(ayuda.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 30f), new Vector2(1880f, 40f));
+        Colocar(ayuda.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 14f), new Vector2(1880f, 40f));
 
         // Panel de opciones
         RectTransform contOpciones = Estirar(UI("PanelOpciones", c));
         PanelVolumen(contOpciones, "VentanaOpciones", out Button volverOpciones);
 
+        SeleccionPersonaje seleccion = CrearPanelSeleccion(c);
+
         MenuPrincipal mp = canvas.AddComponent<MenuPrincipal>();
         Asignar(mp, "panelPrincipal", panelPrincipal.gameObject);
         Asignar(mp, "panelOpciones", contOpciones.gameObject);
+        Asignar(mp, "seleccion", seleccion);
         Asignar(mp, "botonJugar", jugar);
         Asignar(mp, "botonOpciones", opciones);
         Asignar(mp, "botonSalir", salir);
@@ -454,5 +461,44 @@ public static partial class ConstructorJuego
 
         CrearEventSystem();
         EditorSceneManager.SaveScene(escena, RutaEscenas + "/MainMenu.unity");
+    }
+
+    const float AltoPisoMenu = 120f;
+
+    // Pantalla previa a la partida: una tarjeta por cada comando del escuadrón
+    static SeleccionPersonaje CrearPanelSeleccion(Transform padre)
+    {
+        Image panel = FondoOscuro(padre, "PanelSeleccion", new Color(0.03f, 0.04f, 0.03f, 1f)); // opaco: tapa por completo el menú principal
+        Transform p = panel.transform;
+
+        TextMeshProUGUI titulo = Texto(p, "Titulo", "ELIGE TU COMANDO", 110f, Naranja, true);
+        Colocar(titulo.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -50f), new Vector2(1800f, 140f));
+
+        const float anchoTarjeta = 400f, separacion = 520f;
+        Button[] tarjetas = new Button[Escuadron.Length];
+        Image[] retratos = new Image[Escuadron.Length];
+        float primeraX = -separacion * (Escuadron.Length - 1) * 0.5f;
+        for (int i = 0; i < Escuadron.Length; i++)
+        {
+            Button b = Boton(p, "Tarjeta_" + Escuadron[i].hoja, Escuadron[i].nombre, new Vector2(primeraX + separacion * i, 30f), new Vector2(anchoTarjeta, 520f), 32f);
+            TextMeshProUGUI nombre = b.GetComponentInChildren<TextMeshProUGUI>();
+            Colocar(nombre.rectTransform, new Vector2(0.5f, 0f), new Vector2(0.5f, 0f), new Vector2(0f, 24f), new Vector2(anchoTarjeta - 30f, 60f));
+            Image retrato = Imagen(b.transform, "Retrato", Frames(G("Personajes/" + Escuadron[i].hoja + ".png"))[0], Color.white);
+            retrato.preserveAspect = true;
+            Colocar(retrato.rectTransform, new Vector2(0.5f, 1f), new Vector2(0.5f, 1f), new Vector2(0f, -30f), new Vector2(336f, 360f));
+            tarjetas[i] = b;
+            retratos[i] = retrato;
+        }
+
+        TextMeshProUGUI descripcion = Texto(p, "Descripcion", "", 24f, Crema, false);
+        Colocar(descripcion.rectTransform, new Vector2(0.5f, 0.5f), new Vector2(0.5f, 0.5f), new Vector2(0f, -285f), new Vector2(1700f, 80f));
+        Button volver = Boton(p, "BotonVolver", "VOLVER", new Vector2(0f, -420f), new Vector2(420f, 80f));
+
+        SeleccionPersonaje s = panel.gameObject.AddComponent<SeleccionPersonaje>();
+        Asignar(s, "tarjetas", tarjetas);
+        Asignar(s, "retratos", retratos);
+        Asignar(s, "textoDescripcion", descripcion);
+        Asignar(s, "botonVolver", volver);
+        return s;
     }
 }

@@ -50,6 +50,9 @@ MonoBehaviour:
   vidasIniciales: 3
   granadasPorVida: 5
   totalNiveles: 3
+  personajes:
+  - {fileID: 11400000, guid: f51b6b1b85612184eb3134ba19d46088, type: 2}
+  - {fileID: 11400000, guid: fe7e6058096ef8943944a7a2e6c69fe0, type: 2}
   escenaMenu: MainMenu
   prefijoNivel: Nivel
 --- !u!114 &675515367478451667

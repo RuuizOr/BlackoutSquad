@@ -23,7 +23,8 @@ public class BotonAnimado : MonoBehaviour, IPointerEnterHandler, IPointerExitHan
 
     void OnEnable()
     {
-        resaltado = false;
+        // Si sigue seleccionado (al reabrir la pausa) no llega OnSelect: hay que resaltarlo aquí
+        resaltado = EventSystem.current != null && EventSystem.current.currentSelectedGameObject == gameObject;
         transform.localScale = escalaBase;
         if (texto != null) texto.color = colorNormal;
     }

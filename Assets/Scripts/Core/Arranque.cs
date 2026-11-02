@@ -16,5 +16,6 @@ public static class Arranque
         }
         GameObject sistemas = Object.Instantiate(prefab);
         sistemas.name = "SistemasJuego";
+        sistemas.AddComponent<GestorMando>();
     }
 }

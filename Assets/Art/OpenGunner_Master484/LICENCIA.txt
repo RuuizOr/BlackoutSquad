@@ -1,0 +1,4 @@
+Open Gunner Starter Kit - Master484
+Licencia: CC-BY 3.0 https://creativecommons.org/licenses/by/3.0/
+Origen: https://opengameart.org/content/open-gunner-starter-kit
+Cambios: se eligieron cuadros del héroe y se escalaron a 1.75x para Comando Bravo.

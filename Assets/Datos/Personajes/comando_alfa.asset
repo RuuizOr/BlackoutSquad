@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 092b18a8936548e3b38df45788b0d31a, type: 3}
+  m_Name: comando_alfa
+  m_EditorClassIdentifier: Assembly-CSharp::PersonajeDatos
+  nombre: COMANDO ALFA
+  descripcion: "El veterano del escuadr\xF3n. Disciplinado y siempre al frente."
+  frames:
+  - {fileID: -7582915331960043564, guid: 7ccb7426eb5dca647bdd8083547ad6d6, type: 3}
+  - {fileID: -7364963941162922852, guid: 7ccb7426eb5dca647bdd8083547ad6d6, type: 3}
+  - {fileID: -4198446425993413591, guid: 7ccb7426eb5dca647bdd8083547ad6d6, type: 3}
+  - {fileID: 3459696194609402790, guid: 7ccb7426eb5dca647bdd8083547ad6d6, type: 3}
+  - {fileID: -5957492410652010232, guid: 7ccb7426eb5dca647bdd8083547ad6d6, type: 3}
+  - {fileID: 3915462727199190533, guid: 7ccb7426eb5dca647bdd8083547ad6d6, type: 3}
+  - {fileID: -3519442752520680927, guid: 7ccb7426eb5dca647bdd8083547ad6d6, type: 3}
+  - {fileID: 2008828786598348909, guid: 7ccb7426eb5dca647bdd8083547ad6d6, type: 3}
+  - {fileID: 2916710636920442906, guid: 7ccb7426eb5dca647bdd8083547ad6d6, type: 3}
+  - {fileID: 1888863535037041132, guid: 7ccb7426eb5dca647bdd8083547ad6d6, type: 3}
+  - {fileID: -3867185731958490685, guid: 7ccb7426eb5dca647bdd8083547ad6d6, type: 3}
+  - {fileID: 1505057385660969150, guid: 7ccb7426eb5dca647bdd8083547ad6d6, type: 3}
+  - {fileID: -1609036208059909715, guid: 7ccb7426eb5dca647bdd8083547ad6d6, type: 3}
+  - {fileID: 5177067663394140345, guid: 7ccb7426eb5dca647bdd8083547ad6d6, type: 3}
+  - {fileID: 6740815713095343882, guid: 7ccb7426eb5dca647bdd8083547ad6d6, type: 3}
+  - {fileID: 5056079097150375383, guid: 7ccb7426eb5dca647bdd8083547ad6d6, type: 3}
+  retrato: {fileID: 21300000, guid: 5b1397b1ac026804a9c4e68cf747b069, type: 3}
+  bocaFrente: {x: 0.72, y: 1.07}
+  bocaAgachado: {x: 0.72, y: 0.72}
+  bocaAire: {x: 0.65, y: 1}
+  bocaArriba: {x: -0.35, y: 2.45}

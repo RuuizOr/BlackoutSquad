@@ -51,7 +51,18 @@ public class JugadorDisparo : MonoBehaviour
             armaActual = gm.ArmaGuardada;
             Municion = gm.MunicionGuardada;
         }
+        if (gm != null && gm.PersonajeActual != null) UsarBocasDe(gm.PersonajeActual);
         RecargarGranadas();
+    }
+
+    // Las balas deben salir de la punta del arma de cada comando
+    void UsarBocasDe(PersonajeDatos p)
+    {
+        bocaFrente = p.bocaFrente;
+        bocaAgachado = p.bocaAgachado;
+        bocaAire = p.bocaAire;
+        bocaArriba = p.bocaArriba;
+        bocaDiagonalArriba = p.bocaArriba + new Vector2(0.45f, -0.25f);
     }
 
     public void RecargarGranadas()

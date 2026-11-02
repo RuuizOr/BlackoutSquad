@@ -39,6 +39,7 @@ public static partial class ConstructorJuego
         {
             // Personajes (hojas en cuadrícula, pies abajo)
             { "Personajes/comando_alfa.png", Imp(PpuPersonajes, Abajo, 96, 120) },
+            { "Personajes/comando_bravo.png", Imp(PpuPersonajes, Abajo, 140, 150) },
             { "Personajes/soldado_raso.png", Imp(PpuPersonajes, Abajo, 72, 96) },
             { "Personajes/soldado_escudo.png", Imp(PpuPersonajes, Abajo, 72, 96) },
             { "Personajes/soldado_elite.png", Imp(PpuPersonajes, Abajo, 72, 96) },
@@ -127,6 +128,7 @@ public static partial class ConstructorJuego
         imp.alphaIsTransparency = true;
         imp.wrapMode = c.repetir ? TextureWrapMode.Repeat : TextureWrapMode.Clamp;
         imp.npotScale = TextureImporterNPOTScale.None;
+        imp.maxTextureSize = 4096; // con el máximo de 2048 Unity encoge las hojas anchas y deforma los cuadros
 
         TextureImporterSettings s = new TextureImporterSettings();
         imp.ReadTextureSettings(s);

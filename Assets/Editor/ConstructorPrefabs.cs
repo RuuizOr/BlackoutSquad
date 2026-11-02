@@ -701,12 +701,46 @@ public static partial class ConstructorJuego
     }
 
     // =====================================================================
+    // Comandos jugables: el primero debe ser Alfa (la skin que trae el prefab del jugador)
+    // =====================================================================
+    static readonly (string hoja, string nombre, string descripcion, string retrato, Vector2 frente, Vector2 agachado, Vector2 aire, Vector2 arriba)[] Escuadron =
+    {
+        ("comando_alfa", "COMANDO ALFA", "El veterano del escuadrón. Disciplinado y siempre al frente.", "icono_vida",
+            new Vector2(0.72f, 1.07f), new Vector2(0.72f, 0.72f), new Vector2(0.65f, 1f), new Vector2(-0.35f, 2.45f)),
+        // Puntas del arma: las imprime Herramientas/preparar_escuadron.py
+        ("comando_bravo", "COMANDO BRAVO", "Blindaje de asalto y cañón pesado. Abre paso donde nadie más puede.", "retrato_bravo",
+            new Vector2(0.62f, 1.12f), new Vector2(0.62f, 0.88f), new Vector2(0.58f, 1.12f), new Vector2(-0.19f, 2.04f)),
+    };
+
+    static PersonajeDatos[] CrearPersonajes()
+    {
+        PersonajeDatos[] personajes = new PersonajeDatos[Escuadron.Length];
+        for (int i = 0; i < Escuadron.Length; i++)
+        {
+            string ruta = RutaDatos + "/Personajes/" + Escuadron[i].hoja + ".asset";
+            PersonajeDatos p = CrearOActualizar(ruta, () => ScriptableObject.CreateInstance<PersonajeDatos>());
+            p.nombre = Escuadron[i].nombre;
+            p.descripcion = Escuadron[i].descripcion;
+            p.frames = Frames(G("Personajes/" + Escuadron[i].hoja + ".png"));
+            p.retrato = SpriteUnico(G("UI/" + Escuadron[i].retrato + ".png"));
+            p.bocaFrente = Escuadron[i].frente;
+            p.bocaAgachado = Escuadron[i].agachado;
+            p.bocaAire = Escuadron[i].aire;
+            p.bocaArriba = Escuadron[i].arriba;
+            EditorUtility.SetDirty(p);
+            personajes[i] = p;
+        }
+        return personajes;
+    }
+
+    // =====================================================================
     // Sistemas globales (Resources/SistemasJuego): GameManager, AudioManager, Efectos, Transición
     // =====================================================================
     static void CrearSistemas()
     {
         GameObject go = Nuevo("SistemasJuego");
-        go.AddComponent<GameManager>();
+        GameManager gm = go.AddComponent<GameManager>();
+        Asignar(gm, "personajes", CrearPersonajes());
 
         AudioManager am = go.AddComponent<AudioManager>();
         string m = RutaAudio + "/Musica/";

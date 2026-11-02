@@ -29,9 +29,40 @@ public static partial class ConstructorJuego
 
     static readonly string[] NombresEscenas = { "Splash", "MainMenu", "Nivel1", "Nivel2", "Nivel3" };
 
+    static DateTime horaCargaCodigo;
+
+    [InitializeOnLoadMethod]
+    static void RegistrarCargaCodigo()
+    {
+        horaCargaCodigo = DateTime.UtcNow;
+    }
+
+    // Si hay scripts más nuevos que el código cargado, construir ahora guardaría datos viejos
+    static bool CodigoDesactualizado()
+    {
+        if (EditorApplication.isCompiling) return true;
+        return Directory.GetFiles("Assets", "*.cs", SearchOption.AllDirectories).Any(f => File.GetLastWriteTimeUtc(f) > horaCargaCodigo);
+    }
+
+    static void Avisar(string mensaje)
+    {
+        EditorUtility.DisplayDialog("Blackout Squad", mensaje, "OK");
+    }
+
     [MenuItem("Blackout Squad/Construir juego", priority = 0)]
     public static void ConstruirJuego()
     {
+        if (EditorApplication.isPlayingOrWillChangePlaymode)
+        {
+            Avisar("Detén el juego (botón Play) y vuelve a ejecutar 'Construir juego'.");
+            return;
+        }
+        AssetDatabase.Refresh(); // detecta scripts e imágenes nuevos
+        if (CodigoDesactualizado())
+        {
+            Avisar("Unity todavía está cargando los scripts nuevos. Espera a que termine y vuelve a ejecutar 'Construir juego'.");
+            return;
+        }
         if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo()) return;
         try
         {
@@ -145,7 +176,7 @@ public static partial class ConstructorJuego
         foreach (string carpeta in new[] { RutaPrefabs, RutaDatos, RutaEscenas, RutaNiveles, RutaResources,
                  RutaPrefabs + "/Efectos", RutaPrefabs + "/Proyectiles", RutaPrefabs + "/Objetos",
                  RutaPrefabs + "/Enemigos", RutaPrefabs + "/Jugador", RutaPrefabs + "/Escenario",
-                 RutaDatos + "/Armas", RutaNiveles + "/Tiles", RutaDatos + "/Materiales" })
+                 RutaDatos + "/Armas", RutaDatos + "/Personajes", RutaNiveles + "/Tiles", RutaDatos + "/Materiales" })
             CrearCarpeta(carpeta);
     }
 

@@ -1,4 +1,6 @@
+using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 // Sliders de volumen de música y efectos (se usan en el menú principal y en la pausa).
@@ -6,11 +8,24 @@ public class PanelOpciones : MonoBehaviour
 {
     [SerializeField] Slider sliderMusica;
     [SerializeField] Slider sliderEfectos;
+    [SerializeField] Color colorSeleccionado = new Color(1f, 0.68f, 0.18f);
+
+    TMP_Text etiquetaMusica, etiquetaEfectos;
+    Color colorEtiqueta;
 
     void Awake()
     {
         sliderMusica.onValueChanged.AddListener(CambiarMusica);
         sliderEfectos.onValueChanged.AddListener(CambiarEfectos);
+        etiquetaMusica = BuscarEtiqueta(sliderMusica);
+        etiquetaEfectos = BuscarEtiqueta(sliderEfectos);
+        if (etiquetaMusica != null) colorEtiqueta = etiquetaMusica.color;
+    }
+
+    static TMP_Text BuscarEtiqueta(Slider s)
+    {
+        Transform t = s.transform.parent.Find("Etiqueta");
+        return t != null ? t.GetComponent<TMP_Text>() : null;
     }
 
     void OnEnable()
@@ -24,6 +39,14 @@ public class PanelOpciones : MonoBehaviour
     void OnDisable()
     {
         if (AudioManager.Instancia != null) AudioManager.Instancia.GuardarVolumenes();
+    }
+
+    // Con mando hay que ver qué slider se está moviendo: su etiqueta se pinta de naranja
+    void Update()
+    {
+        GameObject actual = EventSystem.current != null ? EventSystem.current.currentSelectedGameObject : null;
+        if (etiquetaMusica != null) etiquetaMusica.color = actual == sliderMusica.gameObject ? colorSeleccionado : colorEtiqueta;
+        if (etiquetaEfectos != null) etiquetaEfectos.color = actual == sliderEfectos.gameObject ? colorSeleccionado : colorEtiqueta;
     }
 
     void CambiarMusica(float v)

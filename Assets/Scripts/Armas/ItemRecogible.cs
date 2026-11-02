@@ -28,6 +28,23 @@ public class ItemRecogible : MonoBehaviour
         fase = Random.value * 6f;
     }
 
+    void Start()
+    {
+        if (tipo == TipoItem.VidaExtra) MostrarCaraDelComando();
+    }
+
+    // La vida extra lleva la cara del comando elegido, del mismo tamaño que el sprite original
+    void MostrarCaraDelComando()
+    {
+        GameManager gm = GameManager.Instancia;
+        SpriteRenderer render = visual != null ? visual.GetComponent<SpriteRenderer>() : null;
+        if (render == null || render.sprite == null || gm == null || gm.PersonajeActual == null || gm.PersonajeActual.retrato == null) return;
+
+        Sprite cara = gm.PersonajeActual.retrato;
+        visual.localScale *= render.sprite.bounds.size.x / cara.bounds.size.x;
+        render.sprite = cara;
+    }
+
     void Update()
     {
         fase += Time.deltaTime * velocidadFlotar;

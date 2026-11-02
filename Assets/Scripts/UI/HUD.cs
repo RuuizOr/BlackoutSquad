@@ -11,6 +11,7 @@ public class HUD : MonoBehaviour
     public static HUD Instancia { get; private set; }
 
     [Header("Jugador")]
+    [SerializeField] Image retrato;
     [SerializeField] Image barraVida;
     [SerializeField] TMP_Text textoVidas;
     [SerializeField] Image iconoArma;
@@ -40,6 +41,7 @@ public class HUD : MonoBehaviour
     float tiempoAviso;
     Action alTerminarBriefing;
     float puntosMostrados;
+    TMP_Text textoContinuar;
 
     void Awake()
     {
@@ -48,6 +50,8 @@ public class HUD : MonoBehaviour
         panelBriefing.SetActive(false);
         tarjetaTitulo.alpha = 0f;
         textoAviso.gameObject.SetActive(false);
+        Transform t = panelBriefing.transform.Find("Ventana/Continuar");
+        if (t != null) textoContinuar = t.GetComponent<TMP_Text>();
     }
 
     void Start()
@@ -57,6 +61,11 @@ public class HUD : MonoBehaviour
             vida = JugadorMovimiento.Instancia.GetComponent<VidaJugador>();
             disparo = JugadorMovimiento.Instancia.GetComponent<JugadorDisparo>();
         }
+
+        // La cara junto a las vidas es la del comando elegido
+        GameManager gm = GameManager.Instancia;
+        if (retrato != null && gm != null && gm.PersonajeActual != null && gm.PersonajeActual.retrato != null)
+            retrato.sprite = gm.PersonajeActual.retrato;
     }
 
     void Update()
@@ -71,6 +80,9 @@ public class HUD : MonoBehaviour
             textoAviso.transform.localScale = Vector3.one * pulso;
             if (tiempoAviso <= 0f) textoAviso.gameObject.SetActive(false);
         }
+
+        if (panelBriefing.activeSelf && textoContinuar != null)
+            textoContinuar.text = ControlesJuego.TextoBotonAceptar + "  PARA COMENZAR";
 
         if (panelBriefing.activeSelf && ControlesJuego.AceptarPresionado)
         {

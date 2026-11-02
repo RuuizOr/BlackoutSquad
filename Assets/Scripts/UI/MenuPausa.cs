@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -16,11 +17,17 @@ public class MenuPausa : MonoBehaviour
     [SerializeField] Button botonVolverOpciones;
 
     public static bool Pausado { get; private set; }
+    public static MenuPausa Instancia { get; private set; }
+
+    TMP_Text titulo;
 
     void Awake()
     {
+        Instancia = this;
         Pausado = false;
         raizPausa.SetActive(false);
+        Transform t = ventanaPrincipal.transform.Find("Titulo");
+        if (t != null) titulo = t.GetComponent<TMP_Text>();
         botonReanudar.onClick.AddListener(Reanudar);
         botonReiniciar.onClick.AddListener(Reiniciar);
         botonOpciones.onClick.AddListener(AbrirOpciones);
@@ -30,22 +37,35 @@ public class MenuPausa : MonoBehaviour
 
     void Update()
     {
-        if (!ControlesJuego.PausaPresionada) return;
-        if (Pausado)
+        // B / Círculo solo sirve para regresar: en juego es la granada
+        if (ControlesJuego.PausaPresionada || (Pausado && ControlesJuego.CancelarPresionado))
         {
-            if (ventanaOpciones.activeSelf) CerrarOpciones();
-            else Reanudar();
+            if (Pausado)
+            {
+                if (ventanaOpciones.activeSelf) CerrarOpciones();
+                else Reanudar();
+            }
+            else if (PuedePausar) Pausar();
         }
-        else if (ControladorNivel.Instancia == null || ControladorNivel.Instancia.PuedePausar)
-        {
-            Pausar();
-        }
+    }
+
+    static bool PuedePausar => ControladorNivel.Instancia == null || ControladorNivel.Instancia.PuedePausar;
+
+    // Se desconectó el único mando: pausa avisando el motivo
+    public void PausarSinMando()
+    {
+        if (Pausado || !PuedePausar) return;
+        Pausar();
+        if (titulo != null) titulo.text = "SIN MANDO";
     }
 
     void Pausar()
     {
         Pausado = true;
         if (GameManager.Instancia != null) GameManager.Instancia.Pausado = true;
+        // Los botones del menú no deben llegar al jugador (A saltaría, B lanzaría una granada...)
+        if (JugadorMovimiento.Instancia != null) JugadorMovimiento.Instancia.ControlBloqueado = true;
+        if (titulo != null) titulo.text = "PAUSA";
         Time.timeScale = 0f;
         raizPausa.SetActive(true);
         ventanaPrincipal.SetActive(true);
@@ -59,6 +79,8 @@ public class MenuPausa : MonoBehaviour
     {
         Pausado = false;
         if (GameManager.Instancia != null) GameManager.Instancia.Pausado = false;
+        if (JugadorMovimiento.Instancia != null) JugadorMovimiento.Instancia.ControlBloqueado = false;
+        ControlesJuego.IgnorarAccionesEsteFrame(); // el botón que eligió REANUDAR no debe hacer saltar
         Time.timeScale = 1f;
         raizPausa.SetActive(false);
         AudioManager.SonarUI(Sfx.Reanudar);
