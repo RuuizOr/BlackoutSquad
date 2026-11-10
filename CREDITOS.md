@@ -1,7 +1,6 @@
 # Créditos — Blackout Squad
 
 ## Equipo
-- Márquez Bailón Elías Manuel
 - Ocampo Martínez Ángel Daniel
 - Medina Villa Abril Aidee
 - Ruiz Santos Orlando
