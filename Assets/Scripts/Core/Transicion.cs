@@ -12,6 +12,9 @@ public class Transicion : MonoBehaviour
 
     bool cargando;
 
+    // true mientras la pantalla negra de transición tapa (aunque sea en parte) la escena
+    public static bool Cubriendo => Instancia != null && (Instancia.cargando || Instancia.grupo.alpha > 0.01f);
+
     void Awake()
     {
         if (Instancia != null && Instancia != this) { Destroy(gameObject); return; }

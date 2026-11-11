@@ -17,7 +17,7 @@ public class IntroComic : MonoBehaviour
 
     const float VelocidadTexto = 45f; // letras por segundo
 
-    Image imagen;
+    Image imagen, fondo;
     TextMeshProUGUI texto, contador, ayuda;
     CanvasGroup grupoVineta;
     bool saltar;
@@ -49,8 +49,41 @@ public class IntroComic : MonoBehaviour
 
     IEnumerator Correr(Vineta[] vinetas)
     {
+        yield return PrepararFondo();
         yield return Secuencia(vinetas);
         terminado = true;
+    }
+
+    // Fondo: el nivel desenfocado en lugar de negro
+    IEnumerator PrepararFondo()
+    {
+        CanvasGroup raiz = gameObject.AddComponent<CanvasGroup>();
+        raiz.alpha = 0f;
+
+        // Espera a que termine el fundido de entrada al nivel (si no, la foto saldría negra)
+        float limite = Time.unscaledTime + 3f;
+        while (Transicion.Cubriendo && Time.unscaledTime < limite) yield return null;
+
+        // El HUD no debe salir en la foto
+        Canvas hud = HUD.Instancia != null ? HUD.Instancia.GetComponent<Canvas>() : null;
+        bool hudVisible = hud != null && hud.enabled;
+        if (hudVisible) hud.enabled = false;
+        Texture2D tex = null;
+        yield return FondoDesenfocado.Capturar(t => tex = t);
+        if (hudVisible) hud.enabled = true;
+
+        if (tex != null)
+        {
+            FondoDesenfocado.Aplicar(transform, tex, 0.5f);
+            fondo.color = new Color(0f, 0f, 0f, 0f); // sigue bloqueando toques al juego
+        }
+
+        for (float t = 0f; t < 0.3f; t += Time.unscaledDeltaTime)
+        {
+            raiz.alpha = t / 0.3f;
+            yield return null;
+        }
+        raiz.alpha = 1f;
     }
 
     IEnumerator Secuencia(Vineta[] vinetas)
@@ -126,7 +159,7 @@ public class IntroComic : MonoBehaviour
             if (fuenteTexto == null && n.Contains("PressStart")) fuenteTexto = t.font;
         }
 
-        Image fondo = Crear<Image>("Fondo", transform);
+        fondo = Crear<Image>("Fondo", transform);
         Estirar(fondo.rectTransform);
         fondo.color = new Color(0.06f, 0.04f, 0.05f, 1f);
         fondo.raycastTarget = true; // bloquea toques al juego

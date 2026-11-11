@@ -43,6 +43,33 @@ public class SeleccionPersonaje : MonoBehaviour
         }
     }
 
+    // ---------- Fondo: el menú desenfocado en lugar de un fondo negro ----------
+    CanvasGroup grupo;
+    Image fondoOpaco;
+    Color colorOpaco;
+
+    void OnEnable()
+    {
+        if (grupo == null) grupo = GetComponent<CanvasGroup>();
+        if (grupo == null) grupo = gameObject.AddComponent<CanvasGroup>();
+        if (fondoOpaco == null) { fondoOpaco = GetComponent<Image>(); if (fondoOpaco != null) colorOpaco = fondoOpaco.color; }
+        grupo.alpha = 0f; // invisible un cuadro mientras se toma la foto del menú
+        StartCoroutine(PrepararFondo());
+    }
+
+    System.Collections.IEnumerator PrepararFondo()
+    {
+        Texture2D tex = null;
+        yield return FondoDesenfocado.Capturar(t => tex = t);
+        if (tex != null)
+        {
+            FondoDesenfocado.Aplicar(transform, tex, 0.45f);
+            if (fondoOpaco != null) fondoOpaco.color = new Color(0f, 0f, 0f, 0f); // sigue bloqueando clics al menú
+        }
+        else if (fondoOpaco != null) fondoOpaco.color = colorOpaco; // si no se pudo, queda el fondo de siempre
+        grupo.alpha = 1f;
+    }
+
     void Update()
     {
         if (personajes == null) return;
