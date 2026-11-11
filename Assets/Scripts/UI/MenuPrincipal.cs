@@ -27,6 +27,10 @@ public class MenuPrincipal : MonoBehaviour
         botonJugar.onClick.AddListener(Jugar);
         botonOpciones.onClick.AddListener(() => Mostrar(panelOpciones, botonVolverOpciones));
         botonSalir.onClick.AddListener(Salir);
+#if UNITY_WEBGL && !UNITY_EDITOR
+        // En el navegador no se puede cerrar la pestaña desde el juego, así que SALIR no aparece.
+        botonSalir.gameObject.SetActive(false);
+#endif
         botonVolverOpciones.onClick.AddListener(() => Mostrar(panelPrincipal, botonOpciones));
         if (seleccion != null) seleccion.BotonVolver.onClick.AddListener(() => Mostrar(panelPrincipal, botonJugar));
     }

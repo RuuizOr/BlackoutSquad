@@ -38,4 +38,38 @@ public static class CompilarBuild
             Debug.LogError("El build falló: " + reporte.summary.result + " (revisa la consola)");
         }
     }
+
+    // Menú "Blackout Squad/Compilar build Web": genera la versión WebGL en Build/Web para publicarla en GitHub Pages.
+    // Sin compresión, porque GitHub Pages no envía los encabezados que necesitan Brotli/Gzip.
+    [MenuItem("Blackout Squad/Compilar build Web", priority = 21)]
+    public static void CompilarWeb()
+    {
+        string[] escenas = EditorBuildSettings.scenes.Where(s => s.enabled).Select(s => s.path).ToArray();
+        if (escenas.Length == 0)
+        {
+            Debug.LogError("No hay escenas en Build Profiles. Ejecuta primero 'Blackout Squad/Construir juego'.");
+            return;
+        }
+
+        PlayerSettings.WebGL.compressionFormat = WebGLCompressionFormat.Disabled;
+        PlayerSettings.WebGL.decompressionFallback = false;
+
+        string carpeta = Path.Combine(Directory.GetParent(Application.dataPath).FullName, "Build", "Web");
+        if (Directory.Exists(carpeta)) Directory.Delete(carpeta, true);
+        Directory.CreateDirectory(carpeta);
+
+        BuildPlayerOptions opciones = new BuildPlayerOptions
+        {
+            scenes = escenas,
+            locationPathName = carpeta,
+            target = BuildTarget.WebGL,
+            options = BuildOptions.None
+        };
+
+        BuildReport reporte = BuildPipeline.BuildPlayer(opciones);
+        if (reporte.summary.result == BuildResult.Succeeded)
+            Debug.Log("Build web listo en: " + carpeta);
+        else
+            Debug.LogError("El build web falló: " + reporte.summary.result + " (revisa la consola)");
+    }
 }
