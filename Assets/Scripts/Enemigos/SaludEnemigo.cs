@@ -87,6 +87,7 @@ public class SaludEnemigo : MonoBehaviour, IDañable
 
         Vida -= cantidad;
         tiempoFlash = 0.08f;
+        if (direccion.sqrMagnitude > 0.01f) ultimaDireccion = direccion.normalized;
         AlRecibirDaño?.Invoke();
         AudioManager.Sonar(Sfx.DañoEnemigo, 0.5f);
         if (!esJefe && direccion.x != 0f) transform.position += new Vector3(Mathf.Sign(direccion.x) * retroceso, 0f, 0f);
@@ -140,24 +141,27 @@ public class SaludEnemigo : MonoBehaviour, IDañable
         else StartCoroutine(Caer());
     }
 
-    // Caída estilizada: salta hacia atrás, gira, parpadea y desaparece (sin sangre)
+    Vector2 ultimaDireccion; // dirección del último golpe: el enemigo sale volando hacia allá
+
+    // Caída estilizada: sale volando en la dirección del golpe, gira, parpadea y desaparece (sin sangre)
     IEnumerator Caer()
     {
         foreach (Collider2D c in GetComponentsInChildren<Collider2D>()) c.enabled = false;
         Rigidbody2D rb = GetComponent<Rigidbody2D>();
-        float lado = transform.lossyScale.x >= 0f ? -1f : 1f;
+        float lado = Mathf.Abs(ultimaDireccion.x) > 0.1f ? Mathf.Sign(ultimaDireccion.x) : (transform.lossyScale.x >= 0f ? -1f : 1f);
         if (rb != null)
         {
             rb.bodyType = RigidbodyType2D.Dynamic;
             rb.gravityScale = 3f;
-            rb.linearVelocity = new Vector2(lado * 3f, 7f);
+            rb.linearVelocity = new Vector2(lado * 6.5f, 9f);
         }
         Efectos.Humo(transform.position + Vector3.up * 0.8f);
+        float giroTotal = 300f * -lado;
         float t = 0f;
         while (t < 1f)
         {
             t += Time.deltaTime;
-            transform.rotation = Quaternion.Euler(0f, 0f, Mathf.Lerp(0f, 80f * -lado, t * 2f));
+            transform.rotation = Quaternion.Euler(0f, 0f, giroTotal * Mathf.SmoothStep(0f, 1f, t));
             bool visible = t < 0.5f || Mathf.FloorToInt(t * 20f) % 2 == 0;
             foreach (SpriteRenderer r in renders) if (r != null) r.enabled = visible;
             yield return null;

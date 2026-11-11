@@ -44,6 +44,8 @@ public class Efectos : MonoBehaviour
         Crear(Instancia.humo, pos + Vector3.up * 0.3f, Quaternion.identity);
         AudioManager.Sonar(grande ? Sfx.ExplosionGrande : Sfx.Explosion);
         CamaraSeguimiento.Sacudir(grande ? 0.35f : 0.18f, grande ? 0.4f : 0.22f);
+        AmbienteNivel.Iluminar(pos, new Color(1f, 0.6f, 0.25f), grande ? 9f : 6f, grande ? 2.8f : 2f, grande ? 0.45f : 0.3f);
+        if (grande) Vibracion.Vibrar(90);
     }
 
     public static void ExplosionChica(Vector3 pos)
@@ -53,6 +55,7 @@ public class Efectos : MonoBehaviour
         Crear(Instancia.chispas, pos, Quaternion.identity);
         AudioManager.Sonar(Sfx.ExplosionChica);
         CamaraSeguimiento.Sacudir(0.1f, 0.15f);
+        AmbienteNivel.Iluminar(pos, new Color(1f, 0.7f, 0.3f), 4.5f, 1.6f, 0.22f);
     }
 
     public static void Impacto(Vector3 pos)
@@ -78,6 +81,7 @@ public class Efectos : MonoBehaviour
         if (Instancia == null) return;
         float angulo = Mathf.Atan2(direccion.y, direccion.x) * Mathf.Rad2Deg;
         Crear(Instancia.fogonazo, pos, Quaternion.Euler(0f, 0f, angulo));
+        AmbienteNivel.Iluminar(pos, new Color(1f, 0.82f, 0.45f), 3.5f, 1.5f, 0.08f);
     }
 
     public static void Casquillo(Vector3 pos, float lado)

@@ -43,6 +43,12 @@ public class ControlesTactiles : MonoBehaviour
     // ---------- Diseño (unidades del canvas de referencia 1920x1080) ----------
     const float RadioBase = 150f, RadioPerilla = 70f;
     static readonly Vector2 PosBase = new Vector2(250f, 240f); // desde la esquina inferior izquierda
+
+    // Tamaño elegido en Opciones (escala todo: posiciones y radios, para que nada se encime)
+    float escala = 1f;
+    float RadioJoy => RadioBase * escala;
+    Vector2 PosJoy => PosBase * escala;
+    CanvasGroup grupo;
     const float ZonaJoystickAncho = 0.45f, ZonaJoystickAlto = 0.75f; // fracción de la pantalla
 
     class Boton
@@ -50,7 +56,8 @@ public class ControlesTactiles : MonoBehaviour
         public BotonTactil tipo;
         public RectTransform rt;
         public Image imagen;
-        public float radio;
+        public float radio, radioBase;
+        public Vector2 posBase;
         public int dedo = -1;
     }
 
@@ -62,8 +69,8 @@ public class ControlesTactiles : MonoBehaviour
     bool visible;
     Sprite spCirculo, spAro;
 
-    static readonly Color ColorBoton = new Color(0.08f, 0.08f, 0.08f, 0.45f); // oscuro: se lee sobre cielo y sobre suelo
-    static readonly Color ColorPresionado = new Color(1f, 0.65f, 0.2f, 0.6f);
+    static readonly Color ColorBoton = new Color(0.08f, 0.08f, 0.08f, 0.64f); // oscuro: se lee sobre cielo y sobre suelo
+    static readonly Color ColorPresionado = new Color(1f, 0.65f, 0.2f, 0.86f);
 
     void Awake()
     {
@@ -72,12 +79,14 @@ public class ControlesTactiles : MonoBehaviour
         spAro = CrearSpriteCirculo(true);
         ConstruirUI();
         SceneManager.sceneLoaded += AlCargarEscena;
+        AjustesJuego.Cambiaron += AplicarAjustes;
         MostrarControles(false);
     }
 
     void OnDestroy()
     {
         SceneManager.sceneLoaded -= AlCargarEscena;
+        AjustesJuego.Cambiaron -= AplicarAjustes;
     }
 
     void AlCargarEscena(Scene escena, LoadSceneMode modo)
@@ -139,20 +148,20 @@ public class ControlesTactiles : MonoBehaviour
         if (dedoJoystick == -1 && desdeAbajoIzq.x < tam.x * ZonaJoystickAncho && desdeAbajoIzq.y < tam.y * ZonaJoystickAlto)
         {
             dedoJoystick = dedo;
-            Vector2 minimo = new Vector2(RadioBase, RadioBase) - tam * 0.5f;
+            Vector2 minimo = new Vector2(RadioJoy, RadioJoy) - tam * 0.5f;
             origenJoystick = new Vector2(Mathf.Max(pos.x, minimo.x), Mathf.Max(pos.y, minimo.y));
             baseJoystick.anchoredPosition = origenJoystick + tam * 0.5f;
-            imgBase.color = new Color(1f, 1f, 1f, 0.45f);
-            imgPerilla.color = new Color(1f, 1f, 1f, 0.7f);
+            imgBase.color = new Color(1f, 1f, 1f, 0.64f);
+            imgPerilla.color = new Color(1f, 1f, 1f, 1f);
             MoverJoystick(pos);
         }
     }
 
     void MoverJoystick(Vector2 pos)
     {
-        Vector2 delta = Vector2.ClampMagnitude(pos - origenJoystick, RadioBase);
-        perilla.anchoredPosition = delta;
-        Direccion = delta / RadioBase;
+        Vector2 delta = Vector2.ClampMagnitude(pos - origenJoystick, RadioJoy);
+        perilla.anchoredPosition = delta / escala; // la perilla es hija de la base, que ya está escalada
+        Direccion = delta / RadioJoy;
     }
 
     void TerminarToque(int dedo)
@@ -171,10 +180,10 @@ public class ControlesTactiles : MonoBehaviour
     {
         dedoJoystick = -1;
         Direccion = Vector2.zero;
-        baseJoystick.anchoredPosition = PosBase;
+        baseJoystick.anchoredPosition = PosJoy;
         perilla.anchoredPosition = Vector2.zero;
-        imgBase.color = new Color(1f, 1f, 1f, 0.22f);
-        imgPerilla.color = new Color(1f, 1f, 1f, 0.35f);
+        imgBase.color = new Color(1f, 1f, 1f, 0.32f);
+        imgPerilla.color = new Color(1f, 1f, 1f, 0.5f);
     }
 
     void SoltarTodo()
@@ -238,8 +247,28 @@ public class ControlesTactiles : MonoBehaviour
             CrearBoton(BotonTactil.Granada, "GRANADA", new Vector2(1f, 0f), new Vector2(-200f, 445f), 78f, 18f),
             CrearBoton(BotonTactil.Pausa, "II", new Vector2(0.5f, 1f), new Vector2(0f, -75f), 55f, 30f),
         };
+        grupo = raiz.gameObject.AddComponent<CanvasGroup>();
+        grupo.blocksRaycasts = false;
+        grupo.interactable = false;
+        AplicarAjustes();
         SoltarTodo();
         AplicarFuente();
+    }
+
+    // Tamaño y transparencia elegidos en Opciones
+    void AplicarAjustes()
+    {
+        SoltarTodo();
+        escala = AjustesJuego.TamañoControles;
+        grupo.alpha = AjustesJuego.OpacidadControles;
+        baseJoystick.localScale = Vector3.one * escala;
+        baseJoystick.anchoredPosition = PosJoy;
+        foreach (Boton b in botones)
+        {
+            b.radio = b.radioBase * escala;
+            b.rt.anchoredPosition = b.posBase * escala;
+            b.rt.localScale = Vector3.one * escala;
+        }
     }
 
     Boton CrearBoton(BotonTactil tipo, string texto, Vector2 ancla, Vector2 pos, float radio, float tamTexto)
@@ -259,7 +288,7 @@ public class ControlesTactiles : MonoBehaviour
         etiqueta.raycastTarget = false;
         etiqueta.textWrappingMode = TextWrappingModes.NoWrap;
 
-        return new Boton { tipo = tipo, rt = rt, imagen = img, radio = radio };
+        return new Boton { tipo = tipo, rt = rt, imagen = img, radio = radio, radioBase = radio, posBase = pos };
     }
 
     static RectTransform Elemento(string nombre, Transform padre, Vector2 ancla, Vector2 pos, float tamaño, Sprite sprite, out Image img)

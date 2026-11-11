@@ -44,6 +44,8 @@ public class VidaJugador : MonoBehaviour, IDañable
         AudioManager.Sonar(Sfx.DañoJugador);
         CamaraSeguimiento.Sacudir(0.2f, 0.2f);
         StartCoroutine(Flash());
+        GestorVisual.DestelloDaño();
+        Vibracion.Vibrar(Vida <= 0 ? 260 : 70);
 
         if (Vida <= 0)
         {
@@ -75,6 +77,8 @@ public class VidaJugador : MonoBehaviour, IDañable
         if (movimiento.EstaMuerto) return;
         Vida = 0;
         AudioManager.Sonar(Sfx.CaerFoso);
+        GestorVisual.DestelloDaño();
+        Vibracion.Vibrar(260);
         Morir();
     }
 

@@ -68,7 +68,10 @@ public abstract class JefeBase : EnemigoBase
         }
         Efectos.Explosion(b.center, true);
         CamaraSeguimiento.Sacudir(0.6f, 0.8f);
-        if (GameManager.Instancia != null) GameManager.Instancia.HitStop(0.2f);
+        // Cámara lenta para la explosión final (1.2 s reales al 30% de velocidad)
+        if (GameManager.Instancia != null) GameManager.Instancia.HitStop(1.2f, 0.3f);
+        AmbienteNivel.Iluminar(b.center, new Color(1f, 0.75f, 0.4f), 14f, 3.2f, 1.2f);
+        Vibracion.Vibrar(450);
         foreach (SpriteRenderer r in GetComponentsInChildren<SpriteRenderer>()) r.enabled = false;
         foreach (Collider2D c in GetComponentsInChildren<Collider2D>()) c.enabled = false;
         yield return new WaitForSeconds(0.3f);

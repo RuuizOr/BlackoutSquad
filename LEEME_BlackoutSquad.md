@@ -73,6 +73,11 @@ CREDITOS.md            Todos los recursos con autor, enlace y licencia
 
 **Core**
 - `ControlesJuego` — único lugar donde se leen teclado, mouse y gamepad (Input System). Los demás scripts usan sus propiedades.
+- `GestorVisual` — destello rojo al recibir daño y, al cargar cada nivel, crea su `AmbienteNivel`.
+- `AmbienteNivel` — luces dinámicas (fogonazos, explosiones, antorchas), post-procesado (bloom, viñeta y color por
+  misión, perfil en `Resources/PostProceso`) y clima (lluvia y hojas, polvo, brasas y ceniza). Todo por código: no
+  modifica escenas, así que "Construir juego" no lo borra.
+- `Vibracion` y `AjustesJuego` — vibración en celular y ajustes guardados (tamaño/opacidad de controles, vibración).
 - `ControlesTactiles` — joystick y botones en pantalla para celular (Android y navegador del teléfono). Lo crea `Arranque` solo en móvil.
 - `GestorMando` — conexión y desconexión de mandos, cursor y selección de los menús. Lo crea `Arranque`.
 - `GameManager` — vidas, puntos, nivel actual, arma conservada, cambio de escena y "hit stop". Persiste entre escenas.

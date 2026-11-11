@@ -18,6 +18,9 @@ public static class Arranque
         sistemas.name = "SistemasJuego";
         sistemas.AddComponent<GestorMando>();
 
+        // Luces dinámicas, post-procesado, clima y destello de daño (todas las plataformas)
+        GestorVisual.Crear();
+
         // Celular (Android o navegador del teléfono): controles en pantalla, 60 FPS y pantalla siempre encendida
         if (ControlesJuego.EsMovil)
         {
