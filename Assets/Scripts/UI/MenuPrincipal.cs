@@ -30,6 +30,7 @@ public class MenuPrincipal : MonoBehaviour
 #if UNITY_WEBGL && !UNITY_EDITOR
         // En el navegador no se puede cerrar la pestaña desde el juego, así que SALIR no aparece.
         botonSalir.gameObject.SetActive(false);
+        AjustarMarcoSinSalir();
 #endif
         botonVolverOpciones.onClick.AddListener(() => Mostrar(panelPrincipal, botonOpciones));
         if (seleccion != null) seleccion.BotonVolver.onClick.AddListener(() => Mostrar(panelPrincipal, botonJugar));
@@ -69,6 +70,23 @@ public class MenuPrincipal : MonoBehaviour
     {
         if (seleccion != null) Mostrar(seleccion.gameObject, seleccion.TarjetaInicial);
         else if (GameManager.Instancia != null) GameManager.Instancia.NuevaPartida();
+    }
+
+    // Encoge el recuadro de los botones para que abarque solo JUGAR y OPCIONES
+    // (conserva el mismo margen de arriba y de abajo que con tres botones).
+    void AjustarMarcoSinSalir()
+    {
+        Transform t = panelPrincipal.transform.Find("MarcoBotones");
+        RectTransform marco = t != null ? t as RectTransform : null;
+        RectTransform rtSalir = botonSalir.transform as RectTransform;
+        RectTransform rtOpciones = botonOpciones.transform as RectTransform;
+        if (marco == null || rtSalir == null || rtOpciones == null) return;
+
+        float hueco = rtSalir.anchoredPosition.y - rtOpciones.anchoredPosition.y; // negativo: SALIR está abajo
+        Vector2 tamaño = marco.sizeDelta;
+        tamaño.y += hueco;
+        marco.sizeDelta = tamaño;
+        marco.anchoredPosition += new Vector2(0f, -hueco * 0.5f);
     }
 
     void Salir()
