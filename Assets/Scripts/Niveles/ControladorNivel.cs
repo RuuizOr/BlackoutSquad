@@ -61,6 +61,17 @@ public class ControladorNivel : MonoBehaviour
         jugador.ControlBloqueado = true;
         JuegoActivo = false;
 
+        // Intro tipo cómic (solo Misión 1 en partida nueva): el juego queda en pausa mientras se ve
+        GameManager gm = GameManager.Instancia;
+        if (numeroNivel == 1 && gm != null && gm.IntroPendiente)
+        {
+            gm.IntroPendiente = false;
+            Time.timeScale = 0f;
+            yield return IntroComic.Reproducir(gm.PersonajeActual);
+            Time.timeScale = 1f;
+            yield return null;
+        }
+
         // Briefing (solo nivel 1): pausa el juego hasta que el jugador presione una tecla
         if (!string.IsNullOrEmpty(textoBriefing) && HUD.Instancia != null)
         {

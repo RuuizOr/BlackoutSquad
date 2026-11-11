@@ -27,6 +27,9 @@ public class GameManager : MonoBehaviour
 
     public PersonajeDatos[] Personajes => personajes;
     public int IndicePersonaje { get; private set; }
+
+    // La intro tipo cómic se muestra una sola vez, al empezar una partida nueva (no al reintentar)
+    public bool IntroPendiente { get; set; }
     public PersonajeDatos PersonajeActual => personajes != null && IndicePersonaje < personajes.Length ? personajes[IndicePersonaje] : null;
 
     // Arma que se conserva entre niveles durante la partida
@@ -58,6 +61,7 @@ public class GameManager : MonoBehaviour
         Puntos = 0;
         ArmaGuardada = null;
         MunicionGuardada = 0;
+        IntroPendiente = true;
         CargarNivel(1);
     }
 

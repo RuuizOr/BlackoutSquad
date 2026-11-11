@@ -77,6 +77,9 @@ CREDITOS.md            Todos los recursos con autor, enlace y licencia
 - `AmbienteNivel` — luces dinámicas (fogonazos, explosiones, antorchas), post-procesado (bloom, viñeta y color por
   misión, perfil en `Resources/PostProceso`) y clima (lluvia y hojas, polvo, brasas y ceniza). Todo por código: no
   modifica escenas, así que "Construir juego" no lo borra.
+- `IntroComic` — 4 viñetas con la historia de la Operación Apagón antes del briefing de la Misión 1 (solo en partida
+  nueva; se puede saltar). Imágenes en `Resources/Intro`, generadas con `Herramientas/generar_intro.py`.
+- `PantallaCarga` — al entrar a cada misión muestra su nombre, un consejo al azar y una barra de carga (la usa `Transicion`).
 - `Vibracion` y `AjustesJuego` — vibración en celular y ajustes guardados (tamaño/opacidad de controles, vibración).
 - `ControlesTactiles` — joystick y botones en pantalla para celular (Android y navegador del teléfono). Lo crea `Arranque` solo en móvil.
 - `GestorMando` — conexión y desconexión de mandos, cursor y selección de los menús. Lo crea `Arranque`.

@@ -47,14 +47,33 @@ public class Transicion : MonoBehaviour
     {
         cargando = true;
         grupo.blocksRaycasts = true;
+
+        // Al entrar a una misión se muestra la pantalla de carga con un consejo (aparece junto con el fundido)
+        bool esNivel = escena.StartsWith("Nivel");
+        if (esNivel) PantallaCarga.Mostrar(grupo.transform, escena);
+
         yield return Fundir(grupo.alpha, 1f);
         Time.timeScale = 1f;
         if (GameManager.Instancia != null) GameManager.Instancia.Pausado = false;
         AsyncOperation op = SceneManager.LoadSceneAsync(escena);
+        if (esNivel)
+        {
+            // Tiempo mínimo para alcanzar a leer el consejo
+            op.allowSceneActivation = false;
+            float inicio = Time.unscaledTime;
+            while (op.progress < 0.9f || Time.unscaledTime - inicio < PantallaCarga.TiempoMinimo)
+            {
+                PantallaCarga.Progreso(Mathf.Min(op.progress / 0.9f, (Time.unscaledTime - inicio) / PantallaCarga.TiempoMinimo));
+                yield return null;
+            }
+            PantallaCarga.Progreso(1f);
+            op.allowSceneActivation = true;
+        }
         while (!op.isDone) yield return null;
         yield return null;
         cargando = false;
         yield return Fundir(1f, 0f);
+        PantallaCarga.Ocultar();
         grupo.blocksRaycasts = false;
     }
 
