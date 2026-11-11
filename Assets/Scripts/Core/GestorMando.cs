@@ -32,7 +32,8 @@ public class GestorMando : MonoBehaviour
             case InputDeviceChange.Removed:
             case InputDeviceChange.Disconnected:
                 if (mando != ControlesJuego.MandoActivo) break;
-                bool estabaEnUso = ControlesJuego.TipoActual != TipoControl.Teclado;
+                TipoControl tipo = ControlesJuego.TipoActual;
+                bool estabaEnUso = tipo != TipoControl.Teclado && tipo != TipoControl.Tactil;
                 ControlesJuego.UsarMando(OtroMando(mando));
                 // Si se jugaba con él y no queda otro, se pausa para que el jugador no muera mientras tanto
                 if (estabaEnUso && ControlesJuego.MandoActivo == null && MenuPausa.Instancia != null) MenuPausa.Instancia.PausarSinMando();

@@ -3,12 +3,13 @@ using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.DualShock;
 using UnityEngine.InputSystem.XInput;
 
-public enum TipoControl { Teclado, Xbox, PlayStation, Generico }
+public enum TipoControl { Teclado, Xbox, PlayStation, Generico, Tactil }
 
 // Centraliza TODOS los controles (teclado, mouse y gamepad) con el nuevo Input System.
 // Los demás scripts solo leen estas propiedades, nunca los dispositivos.
 // Xbox (One, Series S/X) entra como XInput y PlayStation (4 y 5) como DualShock/DualSense;
 // las acciones usan <Gamepad>, así que los mismos botones físicos sirven para todos.
+// En celular también se suman los controles en pantalla de ControlesTactiles.
 public static class ControlesJuego
 {
     static InputAction mover, apuntarArriba, saltar, disparar, granada, rodar, pausa, aceptar, cancelar;
@@ -21,6 +22,12 @@ public static class ControlesJuego
 
     // Último tipo de control usado: decide qué botones se muestran en pantalla
     public static TipoControl TipoActual { get { Iniciar(); return tipoActual; } }
+
+    // Android o navegador en un teléfono/tablet
+    public static bool EsMovil => Application.isMobilePlatform;
+
+    // Sin mando conectado: en celular se juega con la pantalla táctil, en PC con teclado
+    static TipoControl TipoSinMando => EsMovil ? TipoControl.Tactil : TipoControl.Teclado;
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     static void Reiniciar()
@@ -41,7 +48,7 @@ public static class ControlesJuego
     public static void UsarMando(Gamepad mando)
     {
         MandoActivo = mando;
-        tipoActual = mando != null ? Clasificar(mando) : TipoControl.Teclado;
+        tipoActual = mando != null ? Clasificar(mando) : TipoSinMando;
     }
 
     // Cualquier acción ejecutada indica con qué está jugando (incluye mover el mouse en la UI)
@@ -51,7 +58,8 @@ public static class ControlesJuego
         InputControl control = ((InputAction)objeto).activeControl;
         if (control == null) return;
         if (control.device is Gamepad mando) UsarMando(mando);
-        else if (control.device is Keyboard || control.device is Mouse) tipoActual = TipoControl.Teclado;
+        else if (control.device is Touchscreen) tipoActual = TipoControl.Tactil;
+        else if (control.device is Keyboard || control.device is Mouse) tipoActual = TipoSinMando; // el navegador del celular simula el mouse al tocar
     }
 
     // Lo que se presionó en este frame fue para un menú: no debe convertirse en salto, granada o giro
@@ -112,6 +120,7 @@ public static class ControlesJuego
         aceptar.AddBinding("<Mouse>/leftButton");
         aceptar.AddBinding("<Gamepad>/buttonSouth");
         aceptar.AddBinding("<Gamepad>/start");
+        aceptar.AddBinding("<Touchscreen>/primaryTouch/press");
 
         // Solo mando: en teclado ESC ya hace esta función con la acción de pausa
         cancelar = new InputAction("Cancelar", InputActionType.Button);
@@ -122,7 +131,16 @@ public static class ControlesJuego
     }
 
     // Dirección analógica cruda (-1..1)
-    public static Vector2 Direccion { get { Iniciar(); return mover.ReadValue<Vector2>(); } }
+    public static Vector2 Direccion
+    {
+        get
+        {
+            Iniciar();
+            Vector2 fisico = mover.ReadValue<Vector2>();
+            Vector2 tactil = ControlesTactiles.Direccion;
+            return tactil.sqrMagnitude > fisico.sqrMagnitude ? tactil : fisico;
+        }
+    }
 
     // Ejes "digitales": -1, 0 o 1 (con zona muerta para el stick)
     public static int Horizontal
@@ -141,12 +159,12 @@ public static class ControlesJuego
         }
     }
 
-    public static bool SaltoPresionado { get { Iniciar(); return AccionesPermitidas && saltar.WasPressedThisFrame(); } }
-    public static bool SaltoMantenido { get { Iniciar(); return saltar.IsPressed(); } }
-    public static bool DisparoMantenido { get { Iniciar(); return disparar.IsPressed(); } }
-    public static bool GranadaPresionada { get { Iniciar(); return AccionesPermitidas && granada.WasPressedThisFrame(); } }
-    public static bool RodarPresionado { get { Iniciar(); return AccionesPermitidas && rodar.WasPressedThisFrame(); } }
-    public static bool PausaPresionada { get { Iniciar(); return pausa.WasPressedThisFrame(); } }
+    public static bool SaltoPresionado { get { Iniciar(); return AccionesPermitidas && (saltar.WasPressedThisFrame() || ControlesTactiles.Presionado(BotonTactil.Saltar)); } }
+    public static bool SaltoMantenido { get { Iniciar(); return saltar.IsPressed() || ControlesTactiles.Mantenido(BotonTactil.Saltar); } }
+    public static bool DisparoMantenido { get { Iniciar(); return disparar.IsPressed() || ControlesTactiles.Mantenido(BotonTactil.Disparar); } }
+    public static bool GranadaPresionada { get { Iniciar(); return AccionesPermitidas && (granada.WasPressedThisFrame() || ControlesTactiles.Presionado(BotonTactil.Granada)); } }
+    public static bool RodarPresionado { get { Iniciar(); return AccionesPermitidas && (rodar.WasPressedThisFrame() || ControlesTactiles.Presionado(BotonTactil.Rodar)); } }
+    public static bool PausaPresionada { get { Iniciar(); return pausa.WasPressedThisFrame() || ControlesTactiles.Presionado(BotonTactil.Pausa); } }
     public static bool AceptarPresionado { get { Iniciar(); return aceptar.WasPressedThisFrame(); } }
     public static bool CancelarPresionado { get { Iniciar(); return cancelar.WasPressedThisFrame(); } }
 
@@ -161,6 +179,8 @@ public static class ControlesJuego
                     return "STICK / CRUCETA MOVER Y APUNTAR · A SALTAR · RT DISPARAR · B GRANADA · X RODAR · MENU PAUSA";
                 case TipoControl.PlayStation:
                     return "STICK / CRUCETA MOVER Y APUNTAR · CRUZ SALTAR · R2 DISPARAR · CIRCULO GRANADA · CUADRADO RODAR · OPTIONS PAUSA";
+                case TipoControl.Tactil:
+                    return "JOYSTICK MOVER, APUNTAR Y AGACHARSE · BOTONES SALTAR, DISPARAR, GRANADA Y RODAR · II PAUSA";
                 case TipoControl.Generico:
                     return "STICK / CRUCETA MOVER Y APUNTAR · BOTON ABAJO SALTAR · GATILLO DERECHO DISPARAR · BOTON DERECHO GRANADA · BOTON IZQUIERDO RODAR · START PAUSA";
                 default:
@@ -178,6 +198,7 @@ public static class ControlesJuego
                 case TipoControl.Xbox: return "A";
                 case TipoControl.PlayStation: return "CRUZ";
                 case TipoControl.Generico: return "BOTON ABAJO";
+                case TipoControl.Tactil: return "TOCA LA PANTALLA";
                 default: return "ENTER / ESPACIO";
             }
         }

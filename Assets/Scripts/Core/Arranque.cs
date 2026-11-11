@@ -17,5 +17,13 @@ public static class Arranque
         GameObject sistemas = Object.Instantiate(prefab);
         sistemas.name = "SistemasJuego";
         sistemas.AddComponent<GestorMando>();
+
+        // Celular (Android o navegador del teléfono): controles en pantalla, 60 FPS y pantalla siempre encendida
+        if (ControlesJuego.EsMovil)
+        {
+            Application.targetFrameRate = 60;
+            Screen.sleepTimeout = SleepTimeout.NeverSleep;
+            ControlesTactiles.Crear();
+        }
     }
 }

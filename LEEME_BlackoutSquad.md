@@ -10,6 +10,17 @@ Run & Gun 2D de desplazamiento lateral (Unity 6, URP 2D, nuevo Input System, PC 
 3. Abre `Assets/Scenes/Splash.unity` y presiona **Play**.
    También puedes abrir directamente `Nivel1`, `Nivel2` o `Nivel3`: los sistemas globales se crean solos.
 4. Para generar el ejecutable: **Blackout Squad > Compilar build Windows** (queda en `Build/Windows/BlackoutSquad.exe`).
+5. Para celular: **Blackout Squad > Compilar build Android** (queda en `Build/Android/BlackoutSquad.apk`).
+6. Para la versión web: **Blackout Squad > Compilar build Web** (queda en `Build/Web`; se publica en la rama `gh-pages`
+   y se juega en https://ruuizor.github.io/BlackoutSquad/, también desde el navegador del celular).
+
+### Plataformas
+
+| Plataforma | Build | Controles |
+|---|---|---|
+| PC (Windows) | `.exe` | Teclado y mouse, o mando Xbox / PlayStation |
+| Móvil (Android) | `.apk` | Pantalla táctil (o mando Bluetooth) |
+| Web (PC y celular) | GitHub Pages | Teclado/mando en PC, táctil en celular |
 
 ## 2. Controles
 
@@ -25,6 +36,11 @@ Run & Gun 2D de desplazamiento lateral (Unity 6, URP 2D, nuevo Input System, PC 
 | Rodar (esquivar) | Shift | X | Cuadrado |
 | Pausa | ESC | Menu | Options |
 | Menús: elegir / regresar | Mouse o Enter / ESC | A / B | Cruz / Círculo |
+
+**En celular** aparecen controles en pantalla durante los niveles: joystick a la izquierda (mover, apuntar arriba
+empujando hacia arriba y agacharse empujando hacia abajo), botones **SALTAR**, **DISPARAR**, **RODAR** y **GRANADA**
+a la derecha, y **II** (pausa) arriba al centro. Los menús se usan tocando los botones. Se pueden usar varios dedos a
+la vez (por ejemplo, moverse y disparar). El botón "atrás" de Android también pausa. Lo controla `ControlesTactiles`.
 
 El mando se puede conectar o quitar en cualquier momento (USB o Bluetooth), y las ayudas en pantalla cambian al
 control que se esté usando. Si se desconecta el único mando durante un nivel, el juego se pausa.
@@ -57,6 +73,7 @@ CREDITOS.md            Todos los recursos con autor, enlace y licencia
 
 **Core**
 - `ControlesJuego` — único lugar donde se leen teclado, mouse y gamepad (Input System). Los demás scripts usan sus propiedades.
+- `ControlesTactiles` — joystick y botones en pantalla para celular (Android y navegador del teléfono). Lo crea `Arranque` solo en móvil.
 - `GestorMando` — conexión y desconexión de mandos, cursor y selección de los menús. Lo crea `Arranque`.
 - `GameManager` — vidas, puntos, nivel actual, arma conservada, cambio de escena y "hit stop". Persiste entre escenas.
 - `Arranque` — crea `Resources/SistemasJuego` antes de cargar cualquier escena.
