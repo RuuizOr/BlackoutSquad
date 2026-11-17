@@ -1,8 +1,15 @@
 # Blackout Squad — Reparto del trabajo
 
-**Blackout Squad** es un *Run & Gun* 2D de desplazamiento lateral hecho en **Unity 6** (URP 2D, nuevo Input System, PC Windows,
-teclado y mando de Xbox/PlayStation). El jugador elige entre dos comandos (Alfa o Bravo) y atraviesa tres misiones,
+**Blackout Squad** es un *Run & Gun* 2D de desplazamiento lateral hecho en **Unity 6** (URP 2D, nuevo Input System).
+Funciona en **PC (Windows)**, **celular (Android)** y en el **navegador** (PC y celular), con teclado, mando de
+Xbox/PlayStation o pantalla táctil. El jugador elige entre dos comandos (Alfa o Bravo) y atraviesa tres misiones,
 cada una con su propio jefe:
+
+| Plataforma | Cómo se juega | Dónde |
+|---|---|---|
+| PC (Windows) | Teclado y mouse o mando | `Blackout Squad > Compilar build Windows` |
+| Celular (Android) | Controles táctiles (o mando Bluetooth) | https://ruuizor.github.io/BlackoutSquad/BlackoutSquad.apk |
+| Web (PC y celular) | Teclado/mando o táctil | https://ruuizor.github.io/BlackoutSquad/ |
 
 | Misión | Escena | Tema | Objetivo | Jefe |
 |---|---|---|---|---|
@@ -13,12 +20,14 @@ cada una con su propio jefe:
 El trabajo se dividió en **cuatro áreas**, una por integrante. Cada quien programó los scripts de su área, preparó sus
 recursos (prefabs, sprites, audio) y la parte de la herramienta de construcción (`Assets/Editor`) que genera su contenido.
 
-| Integrante | Área | Scripts del juego | Herramientas / contenido |
+| Integrante | Área | Primera etapa (juego base) | Segunda etapa (multiplataforma y mejoras) |
 |---|---|---|---|
-| **Orlando** | Jugador, armas y sistemas base | 24 | `ConstructorJuego`, `CompilarBuild`, repositorio y MCP |
-| **Astrid** | Enemigos y jefes | 9 + 8 prefabs | `ConstructorPrefabs` |
-| **Ángel** | Niveles, escenario y arte | 9 + 3 mapas | `ConstructorNiveles`, `ConstructorImportacion`, `preparar_arte.py`, `generar_mapas.py` |
-| **Abril** | Interfaz, música y sonido | 11 + 42 audios | `ConstructorUI`, `preparar_escuadron.py`, `CREDITOS.md` |
+| **Orlando** | Jugador, armas y sistemas base | 24 scripts, `ConstructorJuego`, `CompilarBuild`, repositorio y MCP | Controles táctiles, builds de Android y Web, publicación en GitHub Pages |
+| **Astrid** | Enemigos y jefes | 9 scripts + 8 prefabs, `ConstructorPrefabs` | Sensación de impacto, cámara lenta de jefes y vibración |
+| **Ángel** | Niveles, escenario y arte | 9 scripts + 3 mapas, `ConstructorNiveles`, `ConstructorImportacion`, `preparar_arte.py`, `generar_mapas.py` | Luces dinámicas, post-procesado, clima, ícono de la app y arte del cómic |
+| **Abril** | Interfaz, música y sonido | 11 scripts + 42 audios, `ConstructorUI`, `preparar_escuadron.py`, `CREDITOS.md` | Intro tipo cómic, pantalla de carga, fondos desenfocados y opciones para celular |
+
+El detalle de la primera etapa está en las secciones 1 a 4 y el de la segunda etapa en la sección 5.
 
 ---
 
@@ -140,9 +149,62 @@ Hizo todo lo que el jugador ve y escucha fuera de la acción: menús, HUD, músi
 
 ---
 
+## 5. Segunda etapa — Multiplataforma y mejoras
+
+Después del juego base se llevó el proyecto a **celular y navegador** y se mejoró su presentación. Todas las mejoras
+se crean por código al cargar cada escena: **no modifican escenas ni prefabs**, así que "Construir juego" no las borra.
+
+### Orlando — Celular, builds y publicación
+- **Controles táctiles** (`Scripts/Core/ControlesTactiles.cs`): joystick flotante a la izquierda (mover, apuntar
+  arriba y agacharse), botones **SALTAR, DISPARAR, RODAR y GRANADA** a la derecha y **pausa** arriba al centro.
+  Multitáctil (moverse y disparar a la vez) y solo aparecen en celular durante los niveles.
+- **Conexión con los controles** (`ControlesJuego`): suma la entrada táctil a teclado y mando, detecta el tipo de control
+  "táctil", tocar la pantalla acepta en el splash y el briefing, y los textos de ayuda cambian a controles táctiles.
+- `GestorMando` ajustado para no pausar por error al jugar con la pantalla táctil.
+- `Arranque`: en celular fija **60 FPS**, evita que la pantalla se apague y crea los controles táctiles.
+- **Build de Android** (`CompilarBuild`, menú *Compilar build Android*): APK con IL2CPP ARM64, solo horizontal.
+- **Build Web** (menú *Compilar build Web*): versión WebGL sin compresión, publicada en **GitHub Pages** (rama `gh-pages`)
+  junto con el APK para descargarlo desde el celular.
+- **Ajustes guardados** (`AjustesJuego`): tamaño y opacidad de los controles táctiles y vibración, en el dispositivo.
+
+### Astrid — Sensación de impacto y vibración
+- **Enemigos que salen volando** (`SaludEnemigo`): al morir salen disparados en la dirección del golpe girando.
+- **Cámara lenta al derrotar un jefe** (`JefeBase`): la explosión final va al 30% de velocidad, con un fogonazo de luz enorme.
+- **Destello rojo de daño** (`GestorVisual`): las orillas de la pantalla se pintan de rojo cuando el jugador recibe daño
+  o cae a un foso (`VidaJugador`).
+- **Vibración** (`Vibracion.cs` y `Plugins/WebGL/Vibracion.jslib`): al recibir daño, morir, caer a un foso, con
+  explosiones grandes y fuerte al derrotar jefes. Funciona en el APK (vibrador de Android) y en el navegador del celular.
+
+### Ángel — Ambiente visual de las misiones y arte
+- **Luces dinámicas** (`AmbienteNivel`): los fogonazos y las explosiones iluminan el escenario un instante y las
+  antorchas parpadean (luces 2D de URP conectadas a `Efectos`).
+- **Post-procesado** (`Resources/PostProceso.asset`): bloom, viñeta y color propio de cada misión: selva cálida,
+  base militar fría y fortaleza rojiza.
+- **Clima y partículas de ambiente**: lluvia y hojas en la selva, polvo en la base militar, brasas y ceniza en la fortaleza.
+- **Ícono de la app** (`Art/Icono`, `Herramientas/generar_icono.py`): Comando Alfa disparando sobre un atardecer con
+  palmeras; ícono adaptable de Android y de PC.
+- **Arte de la intro** (`Herramientas/generar_intro.py`): las 4 viñetas del cómic armadas con los sprites del juego
+  en estilo pixel art (Kruger, el apagón, el escuadrón y la selva, con versión para Alfa y para Bravo).
+
+### Abril — Presentación e interfaz
+- **Intro tipo cómic** (`IntroComic`): 4 viñetas con la historia de la **Operación Apagón** antes del briefing de la
+  Misión 1, solo en partida nueva. Texto que se escribe solo, se avanza con aceptar o tocando la pantalla, botón
+  **SALTAR**, y la última viñeta muestra al comando elegido.
+- **Pantalla de carga** (`PantallaCarga`, conectada a `Transicion`): al entrar a cada misión muestra su nombre, uno
+  de 14 consejos al azar y una barra de carga.
+- **Fondos desenfocados** (`FondoDesenfocado`): en la selección de comando y en la intro, el fondo es el menú o el
+  nivel desenfocado en lugar de una pantalla negra.
+- **Opciones para celular** (`PanelOpciones`): *Tamaño de controles*, *Opacidad de controles* y *Vibración: Sí/No*;
+  la ventana se ajusta sola a pantallas anchas.
+- **Menú en la versión web** (`MenuPrincipal`): se oculta SALIR (el navegador no puede cerrarse desde el juego) y el
+  recuadro de botones se ajusta para no dejar espacio vacío.
+
+---
+
 ## Trabajo en conjunto
 
 - **Pruebas de juego** de las tres misiones y ajuste de dificultad.
+- **Pruebas en celular y navegador**: controles táctiles, vibración, APK y versión web.
 - **Revisión con MCP**: inspección de las escenas y la consola de Unity con Claude Code (0 errores y 0 advertencias en
   los tres niveles).
 - **Control de versiones** en GitHub con commits descriptivos por funcionalidad.
